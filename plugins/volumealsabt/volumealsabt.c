@@ -318,7 +318,7 @@ static void connect_device (VolumeALSAPlugin *vol)
     else
     {
         DEBUG ("Couldn't get device interface from object manager");
-        if (vol->conn_dialog) show_connect_dialog (vol, TRUE, _("Could not get BlueZ interface"));
+        if (vol->conn_dialog) show_connect_dialog (vol, TRUE, g_dgettext(GETTEXT_PACKAGE, "Could not get BlueZ interface"));
     }
 }
 
@@ -458,12 +458,12 @@ static void show_connect_dialog (VolumeALSAPlugin *vol, gboolean failed, const g
 
     if (!failed)
     {
-        vol->conn_dialog = gtk_dialog_new_with_buttons (_("Connecting Audio Device"), NULL, GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT, NULL);
+        vol->conn_dialog = gtk_dialog_new_with_buttons (g_dgettext(GETTEXT_PACKAGE, "Connecting Audio Device"), NULL, GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT, NULL);
         sprintf (path, "%s/images/preferences-system-bluetooth.png", PACKAGE_DATA_DIR);
         gtk_window_set_icon (GTK_WINDOW (vol->conn_dialog), gdk_pixbuf_new_from_file (path, NULL));
         gtk_window_set_position (GTK_WINDOW (vol->conn_dialog), GTK_WIN_POS_CENTER);
         gtk_container_set_border_width (GTK_CONTAINER (vol->conn_dialog), 10);
-        sprintf (buffer, _("Connecting to Bluetooth audio device '%s'..."), param);
+        sprintf (buffer, g_dgettext(GETTEXT_PACKAGE, "Connecting to Bluetooth audio device '%s'..."), param);
         vol->conn_label = gtk_label_new (buffer);
         gtk_label_set_line_wrap (GTK_LABEL (vol->conn_label), TRUE);
         gtk_label_set_justify (GTK_LABEL (vol->conn_label), GTK_JUSTIFY_LEFT);
@@ -474,9 +474,9 @@ static void show_connect_dialog (VolumeALSAPlugin *vol, gboolean failed, const g
     }
     else
     {
-        sprintf (buffer, _("Failed to connect to device - %s. Try to connect again."), param);
+        sprintf (buffer, g_dgettext(GETTEXT_PACKAGE, "Failed to connect to device - %s. Try to connect again."), param);
         gtk_label_set_text (GTK_LABEL (vol->conn_label), buffer);
-        vol->conn_ok = gtk_dialog_add_button (GTK_DIALOG (vol->conn_dialog), _("_OK"), 1);
+        vol->conn_ok = gtk_dialog_add_button (GTK_DIALOG (vol->conn_dialog), g_dgettext(GETTEXT_PACKAGE, "_OK"), 1);
         g_signal_connect (vol->conn_ok, "clicked", G_CALLBACK (handle_close_connect_dialog), vol);
         gtk_widget_show (vol->conn_ok);
     }
@@ -1133,11 +1133,6 @@ static void volumealsa_update_display(VolumeALSAPlugin * vol)
     gboolean mute;
     int level;
 
-#ifdef ENABLE_NLS
-    // need to rebind here for tooltip update
-    textdomain ( GETTEXT_PACKAGE );
-#endif
-
     /* Mute status. */
     mute = asound_is_muted(vol);
     level = asound_get_volume(vol);
@@ -1162,7 +1157,7 @@ static void volumealsa_update_display(VolumeALSAPlugin * vol)
     }
 
     /* Display current level in tooltip. */
-    char * tooltip = g_strdup_printf("%s %d", _("Volume control"), level);
+    char * tooltip = g_strdup_printf("%s %d", g_dgettext(GETTEXT_PACKAGE, "Volume control"), level);
     gtk_widget_set_tooltip_text(vol->plugin, tooltip);
     g_free(tooltip);
 }
@@ -1403,9 +1398,6 @@ static gboolean volumealsa_button_press_event(GtkWidget * widget, GdkEventButton
 {
     VolumeALSAPlugin * vol = lxpanel_plugin_get_data(widget);
 
-#ifdef ENABLE_NLS
-    textdomain ( GETTEXT_PACKAGE );
-#endif
     if (vol->stopped) return TRUE;
 
     int ctrls = get_simple_ctrls (-1);
@@ -1431,7 +1423,7 @@ static gboolean volumealsa_button_press_event(GtkWidget * widget, GdkEventButton
         {
             GtkWidget *mi;
             vol->menu_popup = gtk_menu_new ();
-            mi = gtk_menu_item_new_with_label (_("No volume control on this device"));
+            mi = gtk_menu_item_new_with_label (g_dgettext(GETTEXT_PACKAGE, "No volume control on this device"));
             gtk_widget_set_sensitive (mi, FALSE);
             gtk_menu_shell_append (GTK_MENU_SHELL (vol->menu_popup), mi);
             gtk_widget_show_all (vol->menu_popup);
@@ -1510,7 +1502,7 @@ static gboolean volumealsa_button_press_event(GtkWidget * widget, GdkEventButton
                 }
             }
 
-            mi = gtk_image_menu_item_new_with_label (_("Analog"));
+            mi = gtk_image_menu_item_new_with_label (g_dgettext(GETTEXT_PACKAGE, "Analog"));
             gtk_image_menu_item_set_always_show_image (GTK_IMAGE_MENU_ITEM (mi), TRUE);
             if (bcm == 1)
             {
@@ -1544,7 +1536,7 @@ static gboolean volumealsa_button_press_event(GtkWidget * widget, GdkEventButton
             }
             else
             {
-                mi = gtk_image_menu_item_new_with_label (_("HDMI"));
+                mi = gtk_image_menu_item_new_with_label (g_dgettext(GETTEXT_PACKAGE, "HDMI"));
                 gtk_image_menu_item_set_always_show_image (GTK_IMAGE_MENU_ITEM (mi), TRUE);
                 if (bcm == 2)
                 {
@@ -1639,7 +1631,7 @@ static gboolean volumealsa_button_press_event(GtkWidget * widget, GdkEventButton
                     mi = gtk_image_menu_item_new_with_label ("");
                     sprintf (buffer, "<i>%s</i>", snd_ctl_card_info_get_name (info));
                     gtk_label_set_markup (GTK_LABEL(gtk_bin_get_child (GTK_BIN (mi))), buffer);
-                    gtk_widget_set_tooltip_text(mi, _("No volume control on this device"));
+                    gtk_widget_set_tooltip_text(mi, g_dgettext(GETTEXT_PACKAGE, "No volume control on this device"));
                 }
                 gtk_image_menu_item_set_always_show_image (GTK_IMAGE_MENU_ITEM (mi), TRUE);
                 if (volumealsa_is_default_card (num)) gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM(mi), image);
@@ -1662,14 +1654,14 @@ static gboolean volumealsa_button_press_event(GtkWidget * widget, GdkEventButton
             sep = gtk_separator_menu_item_new ();
             gtk_menu_shell_append (GTK_MENU_SHELL(vol->menu_popup), sep);
 
-            mi = gtk_image_menu_item_new_with_label (_("USB Device Settings..."));
+            mi = gtk_image_menu_item_new_with_label (g_dgettext(GETTEXT_PACKAGE, "USB Device Settings..."));
             g_signal_connect (mi, "activate", G_CALLBACK (open_config_dialog), (gpointer) vol);
             gtk_menu_shell_append (GTK_MENU_SHELL(vol->menu_popup), mi);
         }
 
         if (!devices)
         {
-            mi = gtk_image_menu_item_new_with_label (_("No audio devices found"));
+            mi = gtk_image_menu_item_new_with_label (g_dgettext(GETTEXT_PACKAGE, "No audio devices found"));
             gtk_widget_set_sensitive (GTK_WIDGET (mi), FALSE);
             gtk_menu_shell_append (GTK_MENU_SHELL(vol->menu_popup), mi);
         }
@@ -1791,7 +1783,7 @@ static void volumealsa_build_popup_window(GtkWidget *p)
     g_signal_connect(vol->volume_scale, "scroll-event", G_CALLBACK(volumealsa_popup_scale_scrolled), vol);
 
     /* Create a check button as the child of the vertical box. */
-    vol->mute_check = gtk_check_button_new_with_label(_("Mute"));
+    vol->mute_check = gtk_check_button_new_with_label(g_dgettext(GETTEXT_PACKAGE, "Mute"));
     gtk_box_pack_end(GTK_BOX(box), vol->mute_check, FALSE, FALSE, 0);
     vol->mute_check_handler = g_signal_connect(vol->mute_check, "toggled", G_CALLBACK(volumealsa_popup_mute_toggled), vol);
     gtk_widget_set_can_focus (vol->mute_check, FALSE);
@@ -1844,7 +1836,6 @@ static GtkWidget *volumealsa_constructor(LXPanel *panel, config_setting_t *setti
     setlocale (LC_ALL, "");
     bindtextdomain ( GETTEXT_PACKAGE, PACKAGE_LOCALE_DIR );
     bind_textdomain_codeset ( GETTEXT_PACKAGE, "UTF-8" );
-    textdomain ( GETTEXT_PACKAGE );
 #endif
 
     vol->bt_conname = NULL;
@@ -1858,7 +1849,7 @@ static GtkWidget *volumealsa_constructor(LXPanel *panel, config_setting_t *setti
     vol->settings = settings;
     lxpanel_plugin_set_data(p, vol, volumealsa_destructor);
     gtk_widget_add_events(p, GDK_BUTTON_PRESS_MASK);
-    gtk_widget_set_tooltip_text(p, _("Volume control"));
+    gtk_widget_set_tooltip_text(p, g_dgettext(GETTEXT_PACKAGE, "Volume control"));
 
     /* Allocate icon as a child of top level. */
     vol->tray_icon = gtk_image_new();
@@ -1920,9 +1911,6 @@ static GtkWidget *volumealsa_configure(LXPanel *panel, GtkWidget *p)
     const gchar *command_line = NULL;
     GAppInfoCreateFlags flags = G_APP_INFO_CREATE_NONE;
 
-#ifdef ENABLE_NLS
-    textdomain ( GETTEXT_PACKAGE );
-#endif
     /* FIXME: configure settings! */
     /* check if command line was configured */
     config_setting_lookup_string(vol->settings, "MixerCommand", &command_line);
@@ -1980,7 +1968,7 @@ static GtkWidget *volumealsa_configure(LXPanel *panel, GtkWidget *p)
     else
     {
         fm_show_error(NULL, NULL,
-                      _("Error, you need to install an application to configure"
+                      g_dgettext(GETTEXT_PACKAGE, "Error, you need to install an application to configure"
                         " the sound (pavucontrol, alsamixer ...)"));
     }
 
